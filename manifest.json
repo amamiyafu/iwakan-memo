@@ -1,6 +1,6 @@
 {
-  "name": "違和感メモ",
-  "short_name": "違和感メモ",
+  "name": "職場違和感メモ",
+  "short_name": "職場違和感メモ",
   "description": "あとから整理するための事実メモを短時間で残せるPWAアプリです。",
   "start_url": "./index.html",
   "scope": "./",
