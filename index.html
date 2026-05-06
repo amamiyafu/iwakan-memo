@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f4eadc">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="違和感メモ">
+  <meta name="apple-mobile-web-app-title" content="職場違和感メモ">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>違和感メモ</title>
+  <title>職場違和感メモ</title>
   <link rel="manifest" href="./manifest.json">
   <style>
     :root {
@@ -86,6 +86,7 @@
 
     .top {
       padding: 8px 2px 16px;
+      text-align: center;
     }
 
     .app-title {
@@ -297,6 +298,15 @@
       flex: 0 0 auto;
     }
 
+    .other-field {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .other-field.is-visible {
+      display: block;
+    }
+
     .actions {
       display: grid;
       gap: 10px;
@@ -381,6 +391,12 @@
       gap: 12px;
     }
 
+    .list-description {
+      margin: -4px 2px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
     .record-card {
       display: block;
       padding: 15px;
@@ -440,6 +456,34 @@
       background: rgba(255, 253, 249, 0.72);
       text-align: center;
       font-weight: 700;
+    }
+
+    .backup-card {
+      width: 100%;
+      margin-bottom: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .backup-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .backup-text {
+      margin: 8px 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .backup-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     .detail-card {
@@ -518,14 +562,18 @@
       .detail-card {
         padding: 16px;
       }
+
+      .backup-actions {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="top">
-      <h1 class="app-title">違和感メモ</h1>
-      <p class="lead">その場では大したことないと思った出来事も、あとから見返せるように残しておくためのメモです。無理に全部書かなくて大丈夫です。</p>
+      <h1 class="app-title">職場違和感メモ</h1>
+      <p class="lead">その場では大したことないと思った出来事も、あとから苦しくなることもあります。そんなときに見返せるように残しておくためのメモです。</p>
     </header>
 
     <nav class="tabs" aria-label="画面切り替え">
@@ -605,11 +653,19 @@
             <legend class="group-label">その時やその後の状態</legend>
             <p class="help">その場では平気でも、帰宅後や数日後につらくなることがあります。</p>
             <div class="check-grid" id="statesGroup"></div>
+            <div class="other-field" id="stateOtherField">
+              <label for="stateOther">その他の状態（任意）</label>
+              <input class="text-input" type="text" id="stateOther" name="stateOther" placeholder="例：死のうとした、仕事に行けなくなった、家で泣き続けた など" autocomplete="off">
+            </div>
           </fieldset>
 
           <fieldset class="field">
             <legend class="group-label">記録・証拠</legend>
             <div class="check-grid" id="evidencesGroup"></div>
+            <div class="other-field" id="evidenceOtherField">
+              <label for="evidenceOther">その他の記録・証拠（任意）</label>
+              <input class="text-input" type="text" id="evidenceOther" name="evidenceOther" placeholder="例：家族への相談、通話履歴、病院の記録 など" autocomplete="off">
+            </div>
           </fieldset>
 
           <div class="field">
@@ -630,6 +686,17 @@
       <div class="list-head">
         <h2 class="section-title" id="listTitle">記録一覧</h2>
         <span class="count" id="recordCount"></span>
+      </div>
+      <p class="list-description">カードをタップすると詳細を見ることができ、編集や削除もできます。</p>
+      <div class="backup-card" aria-labelledby="backupTitle">
+        <h3 class="backup-title" id="backupTitle">バックアップ</h3>
+        <p class="backup-text">このアプリの記録は、この端末・このブラウザ内に保存されます。端末変更、ブラウザのデータ削除、PWAの不具合などで記録が消えてしまう可能性があります。記録を失わないために、必ず定期的にバックアップを保存してください。</p>
+        <div class="backup-actions">
+          <button class="button button-secondary" type="button" id="exportBackupButton">バックアップを保存</button>
+          <button class="button button-plain" type="button" id="importBackupButton">バックアップを読み込む</button>
+        </div>
+        <p class="message" id="backupMessage" role="status" aria-live="polite"></p>
+        <input type="file" id="backupFileInput" accept=".json,application/json" hidden>
       </div>
       <div class="record-list" id="recordList"></div>
     </section>
@@ -687,13 +754,21 @@
     const witnessDetailInput = document.getElementById("witnessDetail");
     const memoInput = document.getElementById("memo");
     const statesGroup = document.getElementById("statesGroup");
+    const stateOtherField = document.getElementById("stateOtherField");
+    const stateOtherInput = document.getElementById("stateOther");
     const evidencesGroup = document.getElementById("evidencesGroup");
+    const evidenceOtherField = document.getElementById("evidenceOtherField");
+    const evidenceOtherInput = document.getElementById("evidenceOther");
     const saveButton = document.getElementById("saveButton");
     const cancelEditButton = document.getElementById("cancelEditButton");
     const message = document.getElementById("message");
     const recordList = document.getElementById("recordList");
     const recordCount = document.getElementById("recordCount");
     const detailCard = document.getElementById("detailCard");
+    const exportBackupButton = document.getElementById("exportBackupButton");
+    const importBackupButton = document.getElementById("importBackupButton");
+    const backupFileInput = document.getElementById("backupFileInput");
+    const backupMessage = document.getElementById("backupMessage");
 
     function padNumber(value) {
       return String(value).padStart(2, "0");
@@ -714,10 +789,31 @@
       return "record-" + Date.now() + "-" + Math.random().toString(36).slice(2);
     }
 
+    function normalizeRecord(record) {
+      return {
+        id: record.id || createId(),
+        date: record.date || "",
+        time: record.time || "",
+        person: record.person || "",
+        event: record.event || "",
+        situation: record.situation || "",
+        witnesses: record.witnesses || "",
+        witnessDetail: record.witnessDetail || "",
+        states: Array.isArray(record.states) ? record.states : [],
+        stateOther: record.stateOther || "",
+        evidences: Array.isArray(record.evidences) ? record.evidences : [],
+        evidenceOther: record.evidenceOther || "",
+        memo: record.memo || "",
+        createdAt: record.createdAt || "",
+        updatedAt: record.updatedAt || ""
+      };
+    }
+
     function loadRecords() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.map(normalizeRecord) : [];
       } catch (error) {
         return [];
       }
@@ -773,6 +869,25 @@
       });
     }
 
+    function hasOtherChecked(name) {
+      return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).some(input => input.value === "その他");
+    }
+
+    function toggleOtherFields() {
+      const stateOtherVisible = hasOtherChecked("states");
+      const evidenceOtherVisible = hasOtherChecked("evidences");
+
+      stateOtherField.classList.toggle("is-visible", stateOtherVisible);
+      evidenceOtherField.classList.toggle("is-visible", evidenceOtherVisible);
+
+      if (!stateOtherVisible) {
+        stateOtherInput.value = "";
+      }
+      if (!evidenceOtherVisible) {
+        evidenceOtherInput.value = "";
+      }
+    }
+
     function showMessage(text) {
       message.textContent = text;
       message.classList.add("is-visible");
@@ -787,6 +902,73 @@
       timeInput.value = now.time;
     }
 
+    function showBackupStatus(text) {
+      switchScreen("list");
+      backupMessage.textContent = text;
+      backupMessage.classList.add("is-visible");
+      window.setTimeout(() => {
+        backupMessage.classList.remove("is-visible");
+      }, 4200);
+    }
+
+    function exportBackup() {
+      const today = getNowValues().date;
+      const backup = {
+        app: "職場違和感メモ",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        records: loadRecords()
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "iwakan-memo-backup-" + today + ".json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function importBackupFile(file) {
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || ""));
+          if (!parsed || !Array.isArray(parsed.records)) {
+            throw new Error("Invalid backup format");
+          }
+          if (!parsed.records.every(record => record && record.id)) {
+            throw new Error("Invalid record");
+          }
+
+          const nextRecords = parsed.records.map(normalizeRecord);
+          const confirmed = window.confirm("読み込んだバックアップで現在の記録を置き換えますか？現在の記録は上書きされます。");
+          if (!confirmed) {
+            return;
+          }
+
+          saveRecords(nextRecords);
+          renderList();
+          resetForm();
+          showBackupStatus("バックアップを読み込みました。");
+        } catch (error) {
+          showBackupStatus("バックアップを読み込めませんでした。");
+        } finally {
+          backupFileInput.value = "";
+        }
+      };
+      reader.onerror = () => {
+        backupFileInput.value = "";
+        showBackupStatus("バックアップを読み込めませんでした。");
+      };
+      reader.readAsText(file);
+    }
+
     function resetForm(options = {}) {
       const keepMessage = Boolean(options.keepMessage);
       memoForm.reset();
@@ -794,6 +976,7 @@
       saveButton.textContent = "記録する";
       cancelEditButton.hidden = true;
       setInitialDateTime();
+      toggleOtherFields();
       if (!keepMessage) {
         message.classList.remove("is-visible");
       }
@@ -882,10 +1065,12 @@
           <div class="detail-item">
             <p class="detail-label">その時やその後の状態</p>
             ${detailValue(record.states)}
+            ${record.stateOther ? `<p class="detail-value">その他の状態：${escapeHtml(record.stateOther)}</p>` : ""}
           </div>
           <div class="detail-item">
             <p class="detail-label">記録・証拠</p>
             ${detailValue(record.evidences)}
+            ${record.evidenceOther ? `<p class="detail-value">その他の記録・証拠：${escapeHtml(record.evidenceOther)}</p>` : ""}
           </div>
           <div class="detail-item">
             <p class="detail-label">メモ</p>
@@ -915,7 +1100,10 @@
       witnessesInput.value = record.witnesses || "";
       witnessDetailInput.value = record.witnessDetail || "";
       setCheckedValues("states", record.states || []);
+      stateOtherInput.value = record.stateOther || "";
       setCheckedValues("evidences", record.evidences || []);
+      evidenceOtherInput.value = record.evidenceOther || "";
+      toggleOtherFields();
       memoInput.value = record.memo || "";
       saveButton.textContent = "更新する";
       cancelEditButton.hidden = false;
@@ -948,7 +1136,9 @@
         witnesses: witnessesInput.value,
         witnessDetail: witnessDetailInput.value.trim(),
         states: getCheckedValues("states"),
+        stateOther: hasOtherChecked("states") ? stateOtherInput.value.trim() : "",
         evidences: getCheckedValues("evidences"),
+        evidenceOther: hasOtherChecked("evidences") ? evidenceOtherInput.value.trim() : "",
         memo: memoInput.value.trim(),
         createdAt: nowIso,
         updatedAt: nowIso
@@ -968,7 +1158,7 @@
       } else {
         records.push(formRecord);
         saveRecords(records);
-        showMessage("記録できました。今日はこれだけで十分です。");
+        showMessage("記録しました。");
       }
 
       resetForm({ keepMessage: true });
@@ -987,6 +1177,20 @@
 
     cancelEditButton.addEventListener("click", () => {
       resetForm();
+    });
+
+    statesGroup.addEventListener("change", toggleOtherFields);
+
+    evidencesGroup.addEventListener("change", toggleOtherFields);
+
+    exportBackupButton.addEventListener("click", exportBackup);
+
+    importBackupButton.addEventListener("click", () => {
+      backupFileInput.click();
+    });
+
+    backupFileInput.addEventListener("change", event => {
+      importBackupFile(event.target.files && event.target.files[0]);
     });
 
     recordList.addEventListener("click", event => {
@@ -1023,6 +1227,7 @@
       buildCheckboxes(statesGroup, "states", statesOptions);
       buildCheckboxes(evidencesGroup, "evidences", evidenceOptions);
       setInitialDateTime();
+      toggleOtherFields();
       renderList();
 
       if ("serviceWorker" in navigator) {
