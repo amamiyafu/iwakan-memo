@@ -596,6 +596,11 @@
             </select>
           </div>
 
+          <div class="field">
+            <label for="witnessDetail">誰がいた？（任意）</label>
+            <input class="text-input" type="text" id="witnessDetail" name="witnessDetail" placeholder="例：○○さん、同じチームの人、取引先の人、名前は分からないが女性社員 など" autocomplete="off">
+          </div>
+
           <fieldset class="field">
             <legend class="group-label">その時やその後の状態</legend>
             <p class="help">その場では平気でも、帰宅後や数日後につらくなることがあります。</p>
@@ -679,6 +684,7 @@
     const eventInput = document.getElementById("event");
     const situationInput = document.getElementById("situation");
     const witnessesInput = document.getElementById("witnesses");
+    const witnessDetailInput = document.getElementById("witnessDetail");
     const memoInput = document.getElementById("memo");
     const statesGroup = document.getElementById("statesGroup");
     const evidencesGroup = document.getElementById("evidencesGroup");
@@ -871,6 +877,7 @@
           <div class="detail-item">
             <p class="detail-label">周囲に誰かいた？</p>
             ${detailValue(record.witnesses)}
+            ${record.witnessDetail ? `<p class="detail-value">誰がいた？：${escapeHtml(record.witnessDetail)}</p>` : ""}
           </div>
           <div class="detail-item">
             <p class="detail-label">その時やその後の状態</p>
@@ -906,6 +913,7 @@
       eventInput.value = record.event || "";
       situationInput.value = record.situation || "";
       witnessesInput.value = record.witnesses || "";
+      witnessDetailInput.value = record.witnessDetail || "";
       setCheckedValues("states", record.states || []);
       setCheckedValues("evidences", record.evidences || []);
       memoInput.value = record.memo || "";
@@ -938,6 +946,7 @@
         event: eventInput.value.trim(),
         situation: situationInput.value.trim(),
         witnesses: witnessesInput.value,
+        witnessDetail: witnessDetailInput.value.trim(),
         states: getCheckedValues("states"),
         evidences: getCheckedValues("evidences"),
         memo: memoInput.value.trim(),
