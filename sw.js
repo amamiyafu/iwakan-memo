@@ -1,8 +1,9 @@
-const CACHE_NAME = "iwakan-memo-v4";
+const CACHE_NAME = "iwakan-memo-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icon.png"
 ];
 
 self.addEventListener("install", event => {
