@@ -3,31 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f6eadb">
+  <meta name="theme-color" content="#f4eadc">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="アルコール量メモ">
+  <meta name="apple-mobile-web-app-title" content="職場違和感メモ">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>アルコール量メモ</title>
-  <link rel="manifest" href="manifest.json">
+  <title>職場違和感メモ</title>
+  <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" href="./icon.png">
   <style>
     :root {
-      --bg: #fff7e8;
-      --bg-soft: #fffaf2;
-      --card: #fffdf8;
-      --card-warm: #fff1dc;
-      --line: #ead9c4;
-      --line-strong: #d7b895;
-      --text: #2f2924;
-      --muted: #7a6b5f;
-      --main: #b87445;
-      --main-dark: #93552f;
-      --main-soft: #f3dcc7;
-      --accent: #8b5a3c;
-      --danger: #b45b4d;
-      --danger-soft: #f7e2dc;
-      --shadow: 0 12px 26px rgba(132, 83, 42, 0.11);
-      --radius: 20px;
+      --bg: #fbf7f0;
+      --bg-soft: #f6eddf;
+      --card: #fffdf9;
+      --text: #2f2a25;
+      --muted: #756d64;
+      --line: #e8dccb;
+      --accent: #8f6b4f;
+      --accent-strong: #6f4f38;
+      --accent-soft: #efe1d1;
+      --danger: #9f4d43;
+      --danger-soft: #f5ded9;
+      --shadow: 0 10px 24px rgba(91, 70, 48, 0.08);
+      --radius: 18px;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
     }
 
     * {
@@ -35,1386 +34,1249 @@
     }
 
     html {
-      width: 100%;
       min-height: 100%;
+      overflow-x: hidden;
       background: var(--bg);
       -webkit-text-size-adjust: 100%;
     }
 
     body {
-      width: 100%;
-      min-width: 0;
       min-height: 100%;
       margin: 0;
       overflow-x: hidden;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(255, 238, 204, 0.78), transparent 34rem),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 44%, #f9ecd9 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+        linear-gradient(180deg, rgba(246, 237, 223, 0.95), rgba(251, 247, 240, 0.96) 260px),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.65;
     }
 
     button,
     input,
+    textarea,
     select {
-      max-width: 100%;
       font: inherit;
-      font-size: 16px;
     }
 
-    input,
-    select,
     button {
+      border: 0;
+      cursor: pointer;
+      touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
 
-    input[type="date"],
-    input[type="number"],
-    input[type="text"],
+    input,
+    textarea,
     select {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      min-height: 50px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 14px;
       color: var(--text);
-      background: #fffefa;
-      box-sizing: border-box;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-      outline: none;
-      -webkit-appearance: none;
-      appearance: none;
     }
 
-    input[type="date"]:focus,
-    input[type="number"]:focus,
-    input[type="text"]:focus,
-    select:focus {
-      border-color: var(--line-strong);
-      box-shadow: 0 0 0 4px rgba(184, 116, 69, 0.16);
-    }
-
-    input[type="file"] {
-      width: 100%;
-      min-height: 48px;
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      background: var(--bg-soft);
-      color: var(--muted);
+    textarea {
+      resize: vertical;
+      min-height: 122px;
     }
 
     .app {
-      width: min(100%, 720px);
+      width: 100%;
+      max-width: 760px;
       margin: 0 auto;
-      padding: calc(18px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom));
+      padding: calc(18px + var(--safe-top)) 16px calc(28px + var(--safe-bottom));
     }
 
-    header {
+    .top {
       padding: 8px 2px 16px;
+      text-align: center;
     }
 
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
-    }
-
-    h1 {
-      margin-bottom: 6px;
-      font-size: 28px;
-      line-height: 1.22;
+    .app-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
       letter-spacing: 0;
-    }
-
-    h2 {
-      margin-bottom: 14px;
-      font-size: 20px;
-      line-height: 1.35;
-      letter-spacing: 0;
-    }
-
-    h3 {
-      margin-bottom: 8px;
-      font-size: 17px;
-      line-height: 1.4;
-      letter-spacing: 0;
+      font-weight: 800;
     }
 
     .lead {
-      margin-bottom: 0;
+      margin: 12px 0 0;
       color: var(--muted);
       font-size: 15px;
     }
 
-    .card {
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px 0 14px;
+      background: linear-gradient(180deg, var(--bg) 70%, rgba(251, 247, 240, 0));
+    }
+
+    .tab-button {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--accent-strong);
+      background: rgba(255, 253, 249, 0.9);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(91, 70, 48, 0.05);
+    }
+
+    .tab-button.is-active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.is-active {
+      display: block;
+    }
+
+    .card,
+    .record-card,
+    .detail-card {
       width: 100%;
-      margin: 0 0 16px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 20px;
       background: var(--card);
       box-shadow: var(--shadow);
-      overflow: hidden;
     }
 
-    .backup-card {
-      display: grid;
-      gap: 0;
-      margin-bottom: 16px;
-      padding: 18px 20px;
-      background: rgba(255, 253, 248, 0.86);
-      box-shadow: 0 8px 18px rgba(132, 83, 42, 0.08);
-    }
-
-    .backup-card h2 {
-      margin-bottom: 8px;
-      font-size: 17px;
-      line-height: 1.35;
-    }
-
-    .backup-card .guide {
-      margin-bottom: 15px;
-      font-size: 13px;
-    }
-
-    .backup-actions {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 10px;
-      align-items: center;
-      width: 100%;
-      max-width: 340px;
-    }
-
-    .backup-status {
-      min-height: 0;
-      margin: 10px 0 0;
-      font-size: 13px;
-    }
-
-    .backup-status:empty {
-      display: none;
+    .card {
+      padding: 18px;
     }
 
     .form-grid {
       display: grid;
-      gap: 14px;
+      gap: 16px;
+    }
+
+    .date-time-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
     }
 
     .field {
       min-width: 0;
     }
 
-    label {
+    .field label,
+    .group-label {
       display: block;
       margin-bottom: 7px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .select-wrap {
-      position: relative;
-      width: 100%;
-    }
-
-    .select-wrap::after {
-      position: absolute;
-      top: 50%;
-      right: 14px;
-      width: 9px;
-      height: 9px;
-      border-right: 2px solid var(--muted);
-      border-bottom: 2px solid var(--muted);
-      content: "";
-      pointer-events: none;
-      transform: translateY(-65%) rotate(45deg);
-    }
-
-    .select-wrap select {
-      padding-right: 42px;
-    }
-
-    .form-grid.two {
-      display: grid;
-      gap: 14px;
-    }
-
-    .result-box {
-      display: grid;
-      gap: 8px;
-      margin-top: 4px;
-      border-radius: 8px;
-      padding: 18px;
-      background: linear-gradient(135deg, var(--card-warm), var(--bg-soft));
-      border: 1px solid var(--line);
-    }
-
-    .result-label {
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .result-value {
-      font-size: 38px;
-      font-weight: 900;
-      line-height: 1.1;
-      color: var(--accent);
-      letter-spacing: 0;
-    }
-
-    .result-value small {
-      font-size: 22px;
-    }
-
-    .summary-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .summary-panel {
-      display: grid;
-      gap: 8px;
-      border-radius: 8px;
-      padding: 18px;
-      background: linear-gradient(135deg, var(--card-warm), #fff8ed);
-      border: 1px solid var(--line);
-    }
-
-    .summary-label {
-      color: var(--muted);
-      font-size: 14px;
+      color: var(--text);
+      font-size: 15px;
       font-weight: 800;
     }
 
-    .summary-value {
-      font-size: 34px;
-      font-weight: 900;
-      line-height: 1.1;
-      color: var(--accent);
-      letter-spacing: 0;
-    }
-
-    .guide {
-      margin: 0;
+    .help {
+      margin: -2px 0 10px;
       color: var(--muted);
       font-size: 14px;
     }
 
-    button {
+    .text-input,
+    .textarea-input,
+    .select-input,
+    .date-input,
+    .time-input {
       width: 100%;
-      min-height: 52px;
-      border: 0;
-      border-radius: 18px;
-      padding: 13px 16px;
-      color: #fff;
-      background: var(--main);
-      font-weight: 900;
-      cursor: pointer;
-      touch-action: manipulation;
-      box-shadow: 0 8px 16px rgba(147, 85, 47, 0.16);
+      max-width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(91, 70, 48, 0.03);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    button:hover,
-    button:active {
-      background: var(--main-dark);
-      transform: translateY(1px);
+    .text-input,
+    .textarea-input,
+    .select-input {
+      display: block;
+      padding: 13px 14px;
+      font-size: 16px;
     }
 
-    button.secondary {
-      border: 1px solid var(--line-strong);
-      color: var(--accent);
-      background: var(--main-soft);
-      box-shadow: none;
+    .text-input,
+    .select-input {
+      min-height: 48px;
     }
 
-    button.secondary:hover,
-    button.secondary:active {
-      color: var(--accent);
-      background: #ead0b8;
+    .textarea-input::placeholder,
+    .text-input::placeholder {
+      color: #9b9288;
     }
 
-    .backup-action {
+    .text-input:focus,
+    .textarea-input:focus,
+    .select-input:focus,
+    .date-input:focus,
+    .time-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(143, 107, 79, 0.14);
+    }
+
+    .input-wrap {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    input[type="date"],
+    input[type="time"],
+    .date-input,
+    .time-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      display: block;
+      height: 50px;
+      min-height: 50px;
+      padding: 0 14px;
+      border-radius: 14px;
+      text-align: left;
+      font-size: 16px;
+      line-height: 50px;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value,
+    input[type="time"]::-webkit-date-and-time-value {
+      text-align: left;
+    }
+
+    .select-input {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--accent-strong) 50%),
+        linear-gradient(135deg, var(--accent-strong) 50%, transparent 50%);
+      background-position:
+        calc(100% - 20px) 21px,
+        calc(100% - 14px) 21px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 36px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .check-pill {
       display: flex;
-      flex: 1 1 132px;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .check-pill input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent);
+      flex: 0 0 auto;
+    }
+
+    .other-field {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .other-field.is-visible {
+      display: block;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .button {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-width: 0;
-      height: 42px;
-      min-height: 42px;
-      margin: 0;
-      border: 1px solid var(--line-strong);
+      min-height: 50px;
+      padding: 12px 16px;
       border-radius: 14px;
-      padding: 0 14px;
-      box-sizing: border-box;
-      color: var(--accent);
-      background: var(--main-soft);
-      font-size: 14px;
-      font-weight: 900;
-      line-height: 1;
-      cursor: pointer;
-      box-shadow: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-    .backup-action:hover,
-    .backup-action:active {
-      color: var(--accent);
-      background: #ead0b8;
-      transform: translateY(1px);
-    }
-
-    .backup-action input[type="file"] {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      min-height: 0;
-      margin: -1px;
-      border: 0;
-      padding: 0;
-      overflow: hidden;
-      opacity: 0;
-      clip: rect(0 0 0 0);
-      white-space: nowrap;
-    }
-
-    .backup-action:focus-within {
-      border-color: var(--line-strong);
-      box-shadow: 0 0 0 4px rgba(184, 116, 69, 0.14);
-    }
-
-    button.danger {
-      border: 1px solid #e4b9ae;
-      color: var(--danger);
-      background: var(--danger-soft);
-      box-shadow: none;
-    }
-
-    button.danger:hover,
-    button.danger:active {
-      color: #9d4b40;
-      background: #efd1c9;
-    }
-
-    .form-actions,
-    .record-actions {
-      display: grid;
-      gap: 10px;
-    }
-
-    .form-actions {
-      grid-template-columns: 1fr;
-    }
-
-    .record-actions {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .record-list,
-    .history-list {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .section-title-row,
-    .history-card-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
-      min-width: 0;
-    }
-
-    .section-title-row {
-      margin-bottom: 14px;
-    }
-
-    .section-title-row h2 {
-      margin-bottom: 0;
-    }
-
-    .history-date-summary {
-      display: grid;
-      gap: 4px;
-      min-width: 0;
-    }
-
-    .add-date-button {
-      width: auto;
-      min-width: 112px;
-      min-height: 38px;
-      border: 1px solid var(--line-strong);
-      border-radius: 999px;
-      padding: 8px 12px;
-      color: var(--accent);
-      background: #fff6e9;
-      box-shadow: none;
-      font-size: 13px;
-      font-weight: 900;
-      line-height: 1.2;
-      white-space: nowrap;
-    }
-
-    .add-date-button:hover,
-    .add-date-button:active {
-      color: var(--accent);
-      background: var(--main-soft);
-    }
-
-    .record-item {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--bg-soft);
-    }
-
-    .record-main {
-      min-width: 0;
-      overflow-wrap: anywhere;
+      font-size: 16px;
       font-weight: 800;
-    }
-
-    .record-item button {
-      width: auto;
-      min-width: 64px;
-      min-height: 40px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-size: 14px;
-    }
-
-    .history-item {
-      display: grid;
-      gap: 8px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: var(--bg-soft);
-    }
-
-    .history-date {
-      font-weight: 900;
-      overflow-wrap: anywhere;
-    }
-
-    .history-total {
-      color: var(--accent);
-      font-weight: 900;
-    }
-
-    .history-detail {
-      display: grid;
-      gap: 4px;
-      margin: 0;
-      padding: 0;
-      color: var(--muted);
-      font-size: 14px;
-      list-style: none;
-    }
-
-    .empty {
-      margin: 0;
-      border: 1px dashed var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      color: var(--muted);
-      background: var(--bg-soft);
       text-align: center;
     }
 
-    .status {
-      min-height: 24px;
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 14px;
+    .button-primary {
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 10px 18px rgba(111, 79, 56, 0.18);
+    }
+
+    .button-primary:active {
+      background: var(--accent-strong);
+    }
+
+    .button-secondary {
+      color: var(--accent-strong);
+      background: var(--accent-soft);
+    }
+
+    .button-plain {
+      color: var(--accent-strong);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .button-danger {
+      color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    .message {
+      display: none;
+      margin: 14px 0 0;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: var(--accent-strong);
+      background: #f2e6d7;
       font-weight: 700;
     }
 
-    .status.error {
-      color: var(--danger);
+    .message.is-visible {
+      display: block;
     }
 
-    .status.ok {
-      color: var(--accent);
+    .list-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 4px 2px 12px;
     }
 
-    .hidden {
-      display: none !important;
+    .section-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
     }
 
-    @media (min-width: 620px) {
-      .form-grid.two,
-      .summary-grid {
-        grid-template-columns: 1fr 1fr;
-      }
+    .count {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
     }
 
-    @media (max-width: 430px) {
+    .record-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-description {
+      margin: -4px 2px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .record-card {
+      display: block;
+      padding: 15px;
+      color: inherit;
+      text-align: left;
+    }
+
+    .record-card:active {
+      transform: translateY(1px);
+    }
+
+    .record-meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .record-person {
+      margin: 5px 0 3px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .record-event {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      max-width: 100%;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: var(--accent-strong);
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      padding: 28px 16px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(255, 253, 249, 0.72);
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .backup-card {
+      width: 100%;
+      margin-bottom: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .backup-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .backup-text {
+      margin: 8px 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .backup-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .detail-card {
+      padding: 18px;
+    }
+
+    .detail-title {
+      margin: 0 0 14px;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    .detail-item {
+      min-width: 0;
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-label {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .detail-value {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-empty {
+      color: #9b9288;
+    }
+
+    .detail-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .detail-actions .button-wide {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 520px) {
       .app {
-        padding-left: 12px;
-        padding-right: 12px;
+        padding-left: 14px;
+        padding-right: 14px;
       }
 
-      .card {
-        padding: 15px;
+      .app-title {
+        font-size: 28px;
       }
 
-      .record-item {
-        grid-template-columns: 1fr;
+      .date-time-row {
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .record-item button {
-        width: 100%;
+      .check-grid {
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .section-title-row,
-      .history-card-head {
-        align-items: stretch;
-        flex-direction: column;
+      .card,
+      .detail-card {
+        padding: 16px;
       }
 
-      .add-date-button {
-        width: 100%;
+      .backup-actions {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <header>
-      <h1>アルコール量メモ</h1>
-      <p class="lead">飲んだ量から純アルコール量を計算し記録します。</p>
+    <header class="top">
+      <h1 class="app-title">職場違和感メモ</h1>
+      <p class="lead">その場では大したことないと思った出来事も、あとから苦しくなることもあります。そんなときに見返せるように残しておくためのメモです。</p>
     </header>
 
-    <section class="card backup-card" aria-labelledby="backupTitle">
-      <div class="backup-head">
-        <h2 id="backupTitle">バックアップ</h2>
-        <p class="guide">記録を保存したり復元できます。<br>大切な記録がなくならないように、定期的に保存をお願いします。</p>
-      </div>
-      <div class="backup-actions">
-        <button id="exportJson" type="button" class="secondary backup-action">保存</button>
-        <label class="secondary backup-action" for="importJson">
-          復元
-          <input id="importJson" type="file" accept="application/json,.json">
-        </label>
-      </div>
-      <p id="backupStatus" class="status backup-status" aria-live="polite"></p>
-    </section>
+    <nav class="tabs" aria-label="画面切り替え">
+      <button class="tab-button is-active" type="button" id="showFormButton">記録する</button>
+      <button class="tab-button" type="button" id="showListButton">一覧を見る</button>
+    </nav>
 
-    <section class="card" aria-labelledby="inputTitle">
-      <h2 id="inputTitle">飲んだお酒</h2>
-      <div class="form-grid">
-        <div class="field">
-          <label for="recordDate">記録日</label>
-          <input id="recordDate" type="date">
-        </div>
+    <section class="screen is-active" id="formScreen" aria-labelledby="formTitle">
+      <div class="card">
+        <h2 class="section-title" id="formTitle">記録フォーム</h2>
+        <form id="memoForm" class="form-grid">
+          <input type="hidden" id="recordId">
 
-        <div class="field">
-          <label for="drinkType">お酒の種類</label>
-          <div class="select-wrap">
-            <select id="drinkType">
-              <option value="ビール">ビール</option>
-              <option value="日本酒">日本酒</option>
-              <option value="赤ワイン">赤ワイン</option>
-              <option value="白ワイン">白ワイン</option>
-              <option value="ロゼワイン">ロゼワイン</option>
-              <option value="スパークリングワイン">スパークリングワイン</option>
-              <option value="焼酎">焼酎</option>
-              <option value="ウイスキー">ウイスキー</option>
-              <option value="ハイボール">ハイボール</option>
-              <option value="チューハイ">チューハイ</option>
-              <option value="梅酒">梅酒</option>
+          <div class="date-time-row">
+            <div class="field">
+              <label for="date">日付</label>
+              <div class="input-wrap">
+                <input class="date-input" type="date" id="date" name="date">
+              </div>
+            </div>
+            <div class="field">
+              <label for="time">時間</label>
+              <div class="input-wrap">
+                <input class="time-input" type="time" id="time" name="time">
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="person">相手</label>
+            <input class="text-input" type="text" id="person" name="person" placeholder="例：上司、先輩、同僚、取引先 など" autocomplete="off">
+          </div>
+
+          <div class="field">
+            <label for="event">何があった？</label>
+            <textarea class="textarea-input" id="event" name="event" placeholder="例：
+・○○と言われた
+・強い言い方をされた
+・人格を否定するようなことを言われた
+・無視された
+・体調不良を責められた
+・人前で叱責された
+・必要以上に責められた"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="situation">場所・状況</label>
+            <textarea class="textarea-input" id="situation" name="situation" placeholder="例：
+・職場で
+・会議中に
+・休憩中に
+・チャットやLINEで
+・ミスを報告した後
+・忙しい時間帯に
+・他の人がいる前で"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="witnesses">周囲に誰かいた？</label>
+            <select class="select-input" id="witnesses" name="witnesses">
+              <option value="">未選択</option>
+              <option value="いなかった">いなかった</option>
+              <option value="1人いた">1人いた</option>
+              <option value="複数人いた">複数人いた</option>
+              <option value="お客さん・利用者さんがいた">お客さん・利用者さんがいた</option>
+              <option value="覚えていない">覚えていない</option>
               <option value="その他">その他</option>
             </select>
           </div>
-        </div>
 
-        <div id="customNameField" class="field hidden">
-          <label for="customName">お酒の名前</label>
-          <input id="customName" type="text" inputmode="text" autocomplete="off" placeholder="例：カクテル">
-        </div>
-
-        <div class="form-grid two">
           <div class="field">
-            <label for="volumeMl">飲んだ量（ml）</label>
-            <input id="volumeMl" type="number" inputmode="decimal" min="0" step="1" placeholder="例：350">
+            <label for="witnessDetail">誰がいた？（任意）</label>
+            <input class="text-input" type="text" id="witnessDetail" name="witnessDetail" placeholder="例：○○さん、女性社員など" autocomplete="off">
           </div>
+
+          <fieldset class="field">
+            <legend class="group-label">その時やその後の状態</legend>
+            <p class="help">その場では平気でも、帰宅後や数日後につらくなることがあります。</p>
+            <div class="check-grid" id="statesGroup"></div>
+            <div class="other-field" id="stateOtherField">
+              <label for="stateOther">その他の状態（任意）</label>
+              <input class="text-input" type="text" id="stateOther" name="stateOther" placeholder="例：死にたい、出勤できないなど" autocomplete="off">
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend class="group-label">記録・証拠</legend>
+            <div class="check-grid" id="evidencesGroup"></div>
+            <div class="other-field" id="evidenceOtherField">
+              <label for="evidenceOther">その他の記録・証拠（任意）</label>
+              <input class="text-input" type="text" id="evidenceOther" name="evidenceOther" placeholder="例：通話記録、病院の記録など" autocomplete="off">
+            </div>
+          </fieldset>
+
           <div class="field">
-            <label for="alcoholPercent">アルコール度数（%）</label>
-            <input id="alcoholPercent" type="number" inputmode="decimal" min="0" max="100" step="0.1" placeholder="例：5">
+            <label for="memo">メモ</label>
+            <textarea class="textarea-input" id="memo" name="memo" placeholder="あとで思い出せるように、短くても大丈夫です。"></textarea>
           </div>
-        </div>
 
-        <div class="result-box" aria-live="polite">
-          <div class="result-label">純アルコール量</div>
-          <div class="result-value"><span id="calculatedAlcohol">0.0</span><small>g</small></div>
-        </div>
-
-        <div class="form-actions">
-          <button id="saveRecord" type="button">記録する</button>
-          <button id="cancelEdit" type="button" class="secondary hidden">キャンセル</button>
-        </div>
-        <p id="saveStatus" class="status" aria-live="polite"></p>
+          <div class="actions">
+            <button class="button button-primary" type="submit" id="saveButton">記録する</button>
+            <button class="button button-plain" type="button" id="cancelEditButton" hidden>編集をやめる</button>
+          </div>
+          <p class="message" id="message" role="status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
 
-    <section class="card" aria-labelledby="todayTitle">
-      <h2 id="todayTitle">今日の合計</h2>
-      <div class="summary-panel" aria-live="polite">
-        <div class="summary-value"><span id="todayTotal">0.0</span>g</div>
+    <section class="screen" id="listScreen" aria-labelledby="listTitle">
+      <div class="list-head">
+        <h2 class="section-title" id="listTitle">記録一覧</h2>
+        <span class="count" id="recordCount"></span>
       </div>
-    </section>
-
-    <section class="card" aria-labelledby="averageTitle">
-      <h2 id="averageTitle">平均純アルコール量</h2>
-      <div class="summary-grid" aria-live="polite">
-        <div class="summary-panel">
-          <div class="summary-label">過去7日平均</div>
-          <div class="summary-value"><span id="average7">0.0</span>g</div>
+      <p class="list-description">カードをタップすると詳細を見ることができ、編集や削除もできます。</p>
+      <div class="backup-card" aria-labelledby="backupTitle">
+        <h3 class="backup-title" id="backupTitle">バックアップ</h3>
+        <p class="backup-text">記録を保存したり復元できます。
+大切な記録がなくならないように、定期的に保存をお願いします。</p>
+        <div class="backup-actions">
+          <button class="button button-secondary" type="button" id="exportBackupButton">バックアップを保存</button>
+          <label class="button button-plain" for="backupFileInput" id="importBackupButton" role="button" tabindex="0">バックアップを復元</label>
         </div>
-        <div class="summary-panel">
-          <div class="summary-label">過去30日平均</div>
-          <div class="summary-value"><span id="average30">0.0</span>g</div>
-        </div>
+        <p class="message" id="backupMessage" role="status" aria-live="polite"></p>
+        <input class="visually-hidden" type="file" id="backupFileInput" accept=".json,application/json">
       </div>
+      <div class="record-list" id="recordList"></div>
     </section>
 
-    <section class="card" aria-labelledby="todayRecordsTitle">
-      <div class="section-title-row">
-        <h2 id="todayRecordsTitle">今日の記録</h2>
-        <button id="addTodayDate" type="button" class="add-date-button">この日に追加</button>
-      </div>
-      <ul id="todayRecords" class="record-list"></ul>
-      <p id="todayEmpty" class="empty hidden">今日の記録はまだありません。</p>
+    <section class="screen" id="detailScreen" aria-labelledby="detailTitle">
+      <article class="detail-card" id="detailCard"></article>
     </section>
-
-    <section class="card" aria-labelledby="historyTitle">
-      <h2 id="historyTitle">履歴</h2>
-      <ul id="historyList" class="history-list"></ul>
-      <p id="historyEmpty" class="empty hidden">記録はまだありません。</p>
-    </section>
-
   </main>
 
   <script>
-    (function () {
-      "use strict";
+    const STORAGE_KEY = "iwakan_memo_records";
 
-      var RECORDS_KEY = "alcoholMemoRecords";
-      var SETTINGS_KEY = "alcoholMemoSettings";
-      var STORAGE_VERSION = 2;
+    const statesOptions = [
+      "動悸",
+      "涙が出た",
+      "不安",
+      "怖かった",
+      "眠れない",
+      "食欲低下",
+      "イライラ",
+      "出勤前につらい",
+      "数日後につらくなった",
+      "何も感じなかった",
+      "その他"
+    ];
 
-      var drinkDefaults = {
-        "ビール": 5,
-        "日本酒": 15,
-        "赤ワイン": 13,
-        "白ワイン": 12,
-        "ロゼワイン": 12,
-        "スパークリングワイン": 11,
-        "焼酎": 25,
-        "ウイスキー": 40,
-        "ハイボール": 7,
-        "チューハイ": 7,
-        "梅酒": 12,
-        "その他": ""
+    const evidenceOptions = [
+      "なし",
+      "LINE",
+      "メール",
+      "録音",
+      "スクショ",
+      "メモ",
+      "日記",
+      "勤務表・シフト",
+      "その他"
+    ];
+
+    const screens = {
+      form: document.getElementById("formScreen"),
+      list: document.getElementById("listScreen"),
+      detail: document.getElementById("detailScreen")
+    };
+
+    const showFormButton = document.getElementById("showFormButton");
+    const showListButton = document.getElementById("showListButton");
+    const memoForm = document.getElementById("memoForm");
+    const recordIdInput = document.getElementById("recordId");
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
+    const personInput = document.getElementById("person");
+    const eventInput = document.getElementById("event");
+    const situationInput = document.getElementById("situation");
+    const witnessesInput = document.getElementById("witnesses");
+    const witnessDetailInput = document.getElementById("witnessDetail");
+    const memoInput = document.getElementById("memo");
+    const statesGroup = document.getElementById("statesGroup");
+    const stateOtherField = document.getElementById("stateOtherField");
+    const stateOtherInput = document.getElementById("stateOther");
+    const evidencesGroup = document.getElementById("evidencesGroup");
+    const evidenceOtherField = document.getElementById("evidenceOtherField");
+    const evidenceOtherInput = document.getElementById("evidenceOther");
+    const saveButton = document.getElementById("saveButton");
+    const cancelEditButton = document.getElementById("cancelEditButton");
+    const message = document.getElementById("message");
+    const recordList = document.getElementById("recordList");
+    const recordCount = document.getElementById("recordCount");
+    const detailCard = document.getElementById("detailCard");
+    const exportBackupButton = document.getElementById("exportBackupButton");
+    const importBackupButton = document.getElementById("importBackupButton");
+    const backupFileInput = document.getElementById("backupFileInput");
+    const backupMessage = document.getElementById("backupMessage");
+
+    function padNumber(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function getNowValues() {
+      const now = new Date();
+      return {
+        date: now.getFullYear() + "-" + padNumber(now.getMonth() + 1) + "-" + padNumber(now.getDate()),
+        time: padNumber(now.getHours()) + ":" + padNumber(now.getMinutes())
       };
+    }
 
-      var elements = {
-        recordDate: document.getElementById("recordDate"),
-        drinkType: document.getElementById("drinkType"),
-        customNameField: document.getElementById("customNameField"),
-        customName: document.getElementById("customName"),
-        volumeMl: document.getElementById("volumeMl"),
-        alcoholPercent: document.getElementById("alcoholPercent"),
-        calculatedAlcohol: document.getElementById("calculatedAlcohol"),
-        saveRecord: document.getElementById("saveRecord"),
-        cancelEdit: document.getElementById("cancelEdit"),
-        saveStatus: document.getElementById("saveStatus"),
-        todayTotal: document.getElementById("todayTotal"),
-        average7: document.getElementById("average7"),
-        average30: document.getElementById("average30"),
-        todayRecords: document.getElementById("todayRecords"),
-        todayEmpty: document.getElementById("todayEmpty"),
-        addTodayDate: document.getElementById("addTodayDate"),
-        historyList: document.getElementById("historyList"),
-        historyEmpty: document.getElementById("historyEmpty"),
-        exportJson: document.getElementById("exportJson"),
-        importJson: document.getElementById("importJson"),
-        backupStatus: document.getElementById("backupStatus")
+    function createId() {
+      if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return "record-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+    }
+
+    function normalizeRecord(record) {
+      return {
+        id: record.id || createId(),
+        date: record.date || "",
+        time: record.time || "",
+        person: record.person || "",
+        event: record.event || "",
+        situation: record.situation || "",
+        witnesses: record.witnesses || "",
+        witnessDetail: record.witnessDetail || "",
+        states: Array.isArray(record.states) ? record.states : [],
+        stateOther: record.stateOther || "",
+        evidences: Array.isArray(record.evidences) ? record.evidences : [],
+        evidenceOther: record.evidenceOther || "",
+        memo: record.memo || "",
+        createdAt: record.createdAt || "",
+        updatedAt: record.updatedAt || ""
       };
+    }
 
-      var state = {
-        records: readRecords(),
-        settings: readSettings(),
-        userEditedPercent: false,
-        editingId: null
+    function loadRecords() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed.map(normalizeRecord) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveRecords(records) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function truncate(value, length) {
+      const text = String(value || "").trim();
+      if (!text) {
+        return "内容は未入力です";
+      }
+      return text.length > length ? text.slice(0, length) + "..." : text;
+    }
+
+    function formatDateTime(date, time) {
+      const dateText = date || "日付未入力";
+      const timeText = time || "時間未入力";
+      return dateText + " " + timeText;
+    }
+
+    function formatIsoDateTime(value) {
+      if (!value) {
+        return "不明";
+      }
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "不明";
+      }
+
+      const parts = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).formatToParts(date).reduce((acc, part) => {
+        acc[part.type] = part.value;
+        return acc;
+      }, {});
+
+      return parts.year + "/" + parts.month + "/" + parts.day + " " + parts.hour + ":" + parts.minute;
+    }
+
+    function buildCheckboxes(container, name, options) {
+      container.innerHTML = options.map((option, index) => {
+        const id = name + "-" + index;
+        return `
+          <label class="check-pill" for="${id}">
+            <input type="checkbox" id="${id}" name="${name}" value="${escapeHtml(option)}">
+            <span>${escapeHtml(option)}</span>
+          </label>
+        `;
+      }).join("");
+    }
+
+    function getCheckedValues(name) {
+      return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(input => input.value);
+    }
+
+    function setCheckedValues(name, values) {
+      const selected = new Set(values || []);
+      document.querySelectorAll('input[name="' + name + '"]').forEach(input => {
+        input.checked = selected.has(input.value);
+      });
+    }
+
+    function hasOtherChecked(name) {
+      return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).some(input => input.value === "その他");
+    }
+
+    function toggleOtherFields() {
+      const stateOtherVisible = hasOtherChecked("states");
+      const evidenceOtherVisible = hasOtherChecked("evidences");
+
+      stateOtherField.classList.toggle("is-visible", stateOtherVisible);
+      evidenceOtherField.classList.toggle("is-visible", evidenceOtherVisible);
+
+      if (!stateOtherVisible) {
+        stateOtherInput.value = "";
+      }
+      if (!evidenceOtherVisible) {
+        evidenceOtherInput.value = "";
+      }
+    }
+
+    function showMessage(text) {
+      message.textContent = text;
+      message.classList.add("is-visible");
+      window.setTimeout(() => {
+        message.classList.remove("is-visible");
+      }, 3600);
+    }
+
+    function setInitialDateTime() {
+      const now = getNowValues();
+      dateInput.value = now.date;
+      timeInput.value = now.time;
+    }
+
+    function showBackupStatus(text) {
+      switchScreen("list");
+      backupMessage.textContent = text;
+      backupMessage.classList.add("is-visible");
+      window.setTimeout(() => {
+        backupMessage.classList.remove("is-visible");
+      }, 4200);
+    }
+
+    function exportBackup() {
+      const today = getNowValues().date;
+      const backup = {
+        app: "職場違和感メモ",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        records: loadRecords()
       };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "iwakan-memo-backup-" + today + ".json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
 
-      function readJson(key, fallback) {
-        var raw = localStorage.getItem(key);
-        if (!raw) {
-          return fallback;
-        }
+    function importBackupFile(file) {
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
         try {
-          return JSON.parse(raw);
-        } catch (error) {
-          return fallback;
-        }
-      }
-
-      function readRecords() {
-        var data = readJson(RECORDS_KEY, []);
-        if (!Array.isArray(data)) {
-          return [];
-        }
-        return data.filter(function (record) {
-          return record && typeof record === "object" && !Array.isArray(record);
-        }).map(ensureRecordId);
-      }
-
-      function readSettings() {
-        var data = readJson(SETTINGS_KEY, {});
-        if (!data || typeof data !== "object" || Array.isArray(data)) {
-          data = {};
-        }
-        data.version = STORAGE_VERSION;
-        return data;
-      }
-
-      function saveRecords() {
-        localStorage.setItem(RECORDS_KEY, JSON.stringify(state.records));
-      }
-
-      function saveSettings() {
-        localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
-      }
-
-      function ensureRecordId(record) {
-        if (typeof record.id === "string" && record.id) {
-          return record;
-        }
-        var copy = Object.assign({}, record);
-        copy.id = createId();
-        return copy;
-      }
-
-      function createId() {
-        if (window.crypto && window.crypto.randomUUID) {
-          return window.crypto.randomUUID();
-        }
-        return "record-" + Date.now() + "-" + Math.random().toString(36).slice(2);
-      }
-
-      function todayString() {
-        var now = new Date();
-        return formatDateLocal(now);
-      }
-
-      function formatDateLocal(date) {
-        var year = date.getFullYear();
-        var month = String(date.getMonth() + 1).padStart(2, "0");
-        var day = String(date.getDate()).padStart(2, "0");
-        return year + "-" + month + "-" + day;
-      }
-
-      function isDateString(value) {
-        return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
-      }
-
-      function dateFromUnknown(value) {
-        if (!value) {
-          return "";
-        }
-        if (isDateString(value)) {
-          return value;
-        }
-        if (typeof value === "number" && value > 0 && value < 1000000000000) {
-          value = value * 1000;
-        }
-        var parsed = new Date(value);
-        if (Number.isNaN(parsed.getTime())) {
-          return "";
-        }
-        return formatDateLocal(parsed);
-      }
-
-      function recordDate(record) {
-        return dateFromUnknown(record.date) ||
-          dateFromUnknown(record.createdAt) ||
-          dateFromUnknown(record.timestamp) ||
-          todayString();
-      }
-
-      function recordAlcoholType(record) {
-        return stringValue(record.alcoholType) ||
-          stringValue(record.drinkType) ||
-          stringValue(record.type) ||
-          "その他";
-      }
-
-      function recordCustomName(record) {
-        return stringValue(record.customAlcoholName) ||
-          stringValue(record.customName) ||
-          stringValue(record.name);
-      }
-
-      function recordVolume(record) {
-        return numberValue(record.volumeMl, record.amountMl, record.volume, record.ml);
-      }
-
-      function recordPercent(record) {
-        return numberValue(record.alcoholPercent, record.percent, record.abv);
-      }
-
-      function recordPureAlcohol(record) {
-        var saved = numberValue(record.pureAlcoholGrams, record.pureAlcoholG, record.pureAlcohol, record.grams);
-        if (saved > 0 || hasAnyNumber(record.pureAlcoholGrams, record.pureAlcoholG, record.pureAlcohol, record.grams)) {
-          return roundOne(saved);
-        }
-        return roundOne(recordVolume(record) * recordPercent(record) / 100 * 0.8);
-      }
-
-      function stringValue() {
-        for (var i = 0; i < arguments.length; i += 1) {
-          if (typeof arguments[i] === "string" && arguments[i].trim()) {
-            return arguments[i].trim();
+          const parsed = JSON.parse(String(reader.result || ""));
+          if (!parsed || !Array.isArray(parsed.records)) {
+            throw new Error("Invalid backup format");
           }
+          if (!parsed.records.every(record => record && record.id)) {
+            throw new Error("Invalid record");
+          }
+
+          const nextRecords = parsed.records.map(normalizeRecord);
+          const confirmed = window.confirm("このバックアップから復元しますか？現在の記録は上書きされます。");
+          if (!confirmed) {
+            return;
+          }
+
+          saveRecords(nextRecords);
+          renderList();
+          resetForm();
+          showBackupStatus("バックアップを復元しました。");
+        } catch (error) {
+          showBackupStatus("バックアップを復元できませんでした。");
+        } finally {
+          backupFileInput.value = "";
         }
+      };
+      reader.onerror = () => {
+        backupFileInput.value = "";
+        showBackupStatus("バックアップを復元できませんでした。");
+      };
+      reader.readAsText(file);
+    }
+
+    function resetForm(options = {}) {
+      const keepMessage = Boolean(options.keepMessage);
+      memoForm.reset();
+      recordIdInput.value = "";
+      saveButton.textContent = "記録する";
+      cancelEditButton.hidden = true;
+      setInitialDateTime();
+      toggleOtherFields();
+      if (!keepMessage) {
+        message.classList.remove("is-visible");
+      }
+    }
+
+    function switchScreen(screenName) {
+      Object.values(screens).forEach(screen => screen.classList.remove("is-active"));
+      screens[screenName].classList.add("is-active");
+      showFormButton.classList.toggle("is-active", screenName === "form");
+      showListButton.classList.toggle("is-active", screenName === "list");
+      if (screenName === "list") {
+        renderList();
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function getSortedRecords() {
+      return loadRecords().sort((a, b) => {
+        const aKey = (a.date || "") + "T" + (a.time || "00:00") + "|" + (a.createdAt || "");
+        const bKey = (b.date || "") + "T" + (b.time || "00:00") + "|" + (b.createdAt || "");
+        return bKey.localeCompare(aKey);
+      });
+    }
+
+    function renderTags(values) {
+      if (!values || values.length === 0) {
         return "";
       }
+      return `<div class="tags">${values.map(value => `<span class="tag">${escapeHtml(value)}</span>`).join("")}</div>`;
+    }
 
-      function numberValue() {
-        for (var i = 0; i < arguments.length; i += 1) {
-          var value = Number(arguments[i]);
-          if (Number.isFinite(value)) {
-            return value;
-          }
+    function renderList() {
+      const records = getSortedRecords();
+      recordCount.textContent = records.length + "件";
+
+      if (records.length === 0) {
+        recordList.innerHTML = '<p class="empty">まだ記録はありません</p>';
+        return;
+      }
+
+      recordList.innerHTML = records.map(record => `
+        <button class="record-card" type="button" data-id="${escapeHtml(record.id)}">
+          <div class="record-meta">${escapeHtml(formatDateTime(record.date, record.time))}</div>
+          <div class="record-person">${escapeHtml(record.person || "相手は未入力")}</div>
+          <p class="record-event">${escapeHtml(truncate(record.event, 72))}</p>
+          ${renderTags(record.states)}
+        </button>
+      `).join("");
+    }
+
+    function detailValue(value) {
+      const text = Array.isArray(value) ? value.join("、") : value;
+      if (!text) {
+        return '<p class="detail-value detail-empty">未入力</p>';
+      }
+      return `<p class="detail-value">${escapeHtml(text)}</p>`;
+    }
+
+    function renderDetail(id) {
+      const record = loadRecords().find(item => item.id === id);
+      if (!record) {
+        switchScreen("list");
+        return;
+      }
+
+      detailCard.innerHTML = `
+        <h2 class="detail-title" id="detailTitle">${escapeHtml(formatDateTime(record.date, record.time))}</h2>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-label">相手</p>
+            ${detailValue(record.person)}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">何があった？</p>
+            ${detailValue(record.event)}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">場所・状況</p>
+            ${detailValue(record.situation)}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">周囲に誰かいた？</p>
+            ${detailValue(record.witnesses)}
+            ${record.witnessDetail ? `<p class="detail-value">誰がいた？：${escapeHtml(record.witnessDetail)}</p>` : ""}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">その時やその後の状態</p>
+            ${detailValue(record.states)}
+            ${record.stateOther ? `<p class="detail-value">その他の状態：${escapeHtml(record.stateOther)}</p>` : ""}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">記録・証拠</p>
+            ${detailValue(record.evidences)}
+            ${record.evidenceOther ? `<p class="detail-value">その他の記録・証拠：${escapeHtml(record.evidenceOther)}</p>` : ""}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">メモ</p>
+            ${detailValue(record.memo)}
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">作成・更新</p>
+            ${detailValue("作成：" + formatIsoDateTime(record.createdAt) + "\n更新：" + formatIsoDateTime(record.updatedAt))}
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button class="button button-secondary" type="button" data-action="edit" data-id="${escapeHtml(record.id)}">編集</button>
+          <button class="button button-danger" type="button" data-action="delete" data-id="${escapeHtml(record.id)}">削除</button>
+          <button class="button button-plain button-wide" type="button" data-action="back">一覧に戻る</button>
+        </div>
+      `;
+      switchScreen("detail");
+    }
+
+    function fillForm(record) {
+      recordIdInput.value = record.id;
+      dateInput.value = record.date || "";
+      timeInput.value = record.time || "";
+      personInput.value = record.person || "";
+      eventInput.value = record.event || "";
+      situationInput.value = record.situation || "";
+      witnessesInput.value = record.witnesses || "";
+      witnessDetailInput.value = record.witnessDetail || "";
+      setCheckedValues("states", record.states || []);
+      stateOtherInput.value = record.stateOther || "";
+      setCheckedValues("evidences", record.evidences || []);
+      evidenceOtherInput.value = record.evidenceOther || "";
+      toggleOtherFields();
+      memoInput.value = record.memo || "";
+      saveButton.textContent = "更新する";
+      cancelEditButton.hidden = false;
+      switchScreen("form");
+    }
+
+    function deleteRecord(id) {
+      if (!window.confirm("この記録を削除しますか？")) {
+        return;
+      }
+      const records = loadRecords().filter(record => record.id !== id);
+      saveRecords(records);
+      renderList();
+      switchScreen("list");
+    }
+
+    memoForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const records = loadRecords();
+      const editingId = recordIdInput.value;
+      const nowIso = new Date().toISOString();
+
+      const formRecord = {
+        id: editingId || createId(),
+        date: dateInput.value,
+        time: timeInput.value,
+        person: personInput.value.trim(),
+        event: eventInput.value.trim(),
+        situation: situationInput.value.trim(),
+        witnesses: witnessesInput.value,
+        witnessDetail: witnessDetailInput.value.trim(),
+        states: getCheckedValues("states"),
+        stateOther: hasOtherChecked("states") ? stateOtherInput.value.trim() : "",
+        evidences: getCheckedValues("evidences"),
+        evidenceOther: hasOtherChecked("evidences") ? evidenceOtherInput.value.trim() : "",
+        memo: memoInput.value.trim(),
+        createdAt: nowIso,
+        updatedAt: nowIso
+      };
+
+      if (editingId) {
+        const index = records.findIndex(record => record.id === editingId);
+        if (index !== -1) {
+          formRecord.createdAt = records[index].createdAt || nowIso;
+          records[index] = formRecord;
+        } else {
+          records.push(formRecord);
         }
-        return 0;
+        saveRecords(records);
+        showMessage("更新できました。");
+        renderList();
+      } else {
+        records.push(formRecord);
+        saveRecords(records);
+        showMessage("記録しました。");
       }
 
-      function hasAnyNumber() {
-        for (var i = 0; i < arguments.length; i += 1) {
-          if (Number.isFinite(Number(arguments[i]))) {
-            return true;
-          }
-        }
-        return false;
+      resetForm({ keepMessage: true });
+    });
+
+    showFormButton.addEventListener("click", () => {
+      if (!recordIdInput.value) {
+        resetForm();
+      }
+      switchScreen("form");
+    });
+
+    showListButton.addEventListener("click", () => {
+      switchScreen("list");
+    });
+
+    cancelEditButton.addEventListener("click", () => {
+      resetForm();
+    });
+
+    statesGroup.addEventListener("change", toggleOtherFields);
+
+    evidencesGroup.addEventListener("change", toggleOtherFields);
+
+    exportBackupButton.addEventListener("click", exportBackup);
+
+    importBackupButton.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        backupFileInput.click();
+      }
+    });
+
+    backupFileInput.addEventListener("change", event => {
+      importBackupFile(event.target.files && event.target.files[0]);
+    });
+
+    recordList.addEventListener("click", event => {
+      const card = event.target.closest(".record-card");
+      if (card) {
+        renderDetail(card.dataset.id);
+      }
+    });
+
+    detailCard.addEventListener("click", event => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) {
+        return;
       }
 
-      function roundOne(value) {
-        return Math.round((Number(value) || 0) * 10) / 10;
+      const action = button.dataset.action;
+      const id = button.dataset.id;
+
+      if (action === "back") {
+        switchScreen("list");
       }
-
-      function formatOne(value) {
-        return roundOne(value).toFixed(1);
-      }
-
-      function getCurrentPureAlcohol() {
-        var amount = Number(elements.volumeMl.value);
-        var percent = Number(elements.alcoholPercent.value);
-        if (!Number.isFinite(amount) || !Number.isFinite(percent) || amount <= 0 || percent < 0) {
-          return 0;
-        }
-        return roundOne(amount * percent / 100 * 0.8);
-      }
-
-      function updateDrinkDefaults() {
-        var type = elements.drinkType.value;
-        elements.customNameField.classList.toggle("hidden", type !== "その他");
-        if (!state.userEditedPercent || type !== "その他") {
-          elements.alcoholPercent.value = drinkDefaults[type];
-          state.userEditedPercent = false;
-        }
-        if (type !== "その他") {
-          elements.customName.value = "";
-        }
-        updateCalculation();
-      }
-
-      function updateCalculation() {
-        elements.calculatedAlcohol.textContent = formatOne(getCurrentPureAlcohol());
-      }
-
-      function resetForm(clearStatus, dateOverride) {
-        var today = todayString();
-        state.editingId = null;
-        state.userEditedPercent = false;
-        elements.recordDate.value = dateOverride || today;
-        elements.recordDate.max = today;
-        elements.drinkType.value = "ビール";
-        elements.customName.value = "";
-        elements.customNameField.classList.add("hidden");
-        elements.volumeMl.value = "";
-        elements.alcoholPercent.value = drinkDefaults["ビール"];
-        elements.saveRecord.textContent = "記録する";
-        elements.cancelEdit.classList.add("hidden");
-        if (clearStatus) {
-          setStatus(elements.saveStatus, "", "");
-        }
-        updateCalculation();
-      }
-
-      function scrollToInputCard() {
-        document.getElementById("inputTitle").scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      function startAddForDate(date) {
-        resetForm(true, date);
-        setStatus(elements.saveStatus, "この日付に追加できます。", "ok");
-        scrollToInputCard();
-      }
-
-      function startEdit(recordId) {
-        var record = state.records.find(function (item) {
-          return item.id === recordId;
-        });
-        if (!record) {
-          setStatus(elements.saveStatus, "編集する記録が見つかりません。", "error");
-          return;
-        }
-
-        var type = recordAlcoholType(record);
-        var customName = recordCustomName(record);
-        var isDefaultType = Object.prototype.hasOwnProperty.call(drinkDefaults, type);
-
-        state.editingId = record.id;
-        state.userEditedPercent = true;
-        elements.recordDate.value = recordDate(record);
-        elements.recordDate.max = todayString();
-        elements.drinkType.value = isDefaultType ? type : "その他";
-        elements.customNameField.classList.toggle("hidden", elements.drinkType.value !== "その他");
-        elements.customName.value = elements.drinkType.value === "その他" ? (customName || (isDefaultType ? "" : type)) : customName;
-        elements.volumeMl.value = recordVolume(record) || "";
-        elements.alcoholPercent.value = recordPercent(record) || "";
-        elements.saveRecord.textContent = "更新する";
-        elements.cancelEdit.classList.remove("hidden");
-        setStatus(elements.saveStatus, "記録を編集中です。", "ok");
-        updateCalculation();
-        scrollToInputCard();
-      }
-
-      function formValues() {
-        return {
-          date: elements.recordDate.value,
-          alcoholType: elements.drinkType.value,
-          customAlcoholName: elements.customName.value.trim(),
-          volumeMl: Number(elements.volumeMl.value),
-          alcoholPercent: Number(elements.alcoholPercent.value),
-          pureAlcoholGrams: getCurrentPureAlcohol()
-        };
-      }
-
-      function validateForm(values) {
-        var today = todayString();
-
-        if (!isDateString(values.date)) {
-          setStatus(elements.saveStatus, "記録日を選択してください。", "error");
-          elements.recordDate.focus();
-          return false;
-        }
-
-        if (values.date > today) {
-          setStatus(elements.saveStatus, "未来の日付は選択できません。", "error");
-          elements.recordDate.focus();
-          return false;
-        }
-
-        if (values.alcoholType === "その他" && !values.customAlcoholName) {
-          setStatus(elements.saveStatus, "その他の場合は、お酒の名前を入力してください。", "error");
-          elements.customName.focus();
-          return false;
-        }
-
-        if (!Number.isFinite(values.volumeMl) || values.volumeMl <= 0) {
-          setStatus(elements.saveStatus, "飲んだ量をmlで入力してください。", "error");
-          elements.volumeMl.focus();
-          return false;
-        }
-
-        if (!Number.isFinite(values.alcoholPercent) || values.alcoholPercent < 0 || values.alcoholPercent > 100) {
-          setStatus(elements.saveStatus, "アルコール度数は0〜100の範囲で入力してください。", "error");
-          elements.alcoholPercent.focus();
-          return false;
-        }
-
-        return true;
-      }
-
-      function displayName(record) {
-        var type = recordAlcoholType(record);
-        var customName = recordCustomName(record);
-        if (type === "その他" && customName) {
-          return customName;
-        }
-        return type;
-      }
-
-      function recordLine(record) {
-        return displayName(record) + " " +
-          recordVolume(record) + "ml / " +
-          recordPercent(record) + "% / " +
-          formatOne(recordPureAlcohol(record)) + "g";
-      }
-
-      function recordsForDate(date) {
-        return state.records.filter(function (record) {
-          return recordDate(record) === date;
-        });
-      }
-
-      function sumRecords(records) {
-        return roundOne(records.reduce(function (sum, record) {
-          return sum + recordPureAlcohol(record);
-        }, 0));
-      }
-
-      function dateNDaysAgo(daysAgo) {
-        var date = new Date();
-        date.setDate(date.getDate() - daysAgo);
-        return formatDateLocal(date);
-      }
-
-      function averageForDays(days) {
-        var total = 0;
-        for (var i = 0; i < days; i += 1) {
-          total += sumRecords(recordsForDate(dateNDaysAgo(i)));
-        }
-        return roundOne(total / days);
-      }
-
-      function updateSummaries() {
-        elements.todayTotal.textContent = formatOne(sumRecords(recordsForDate(todayString())));
-        elements.average7.textContent = formatOne(averageForDays(7));
-        elements.average30.textContent = formatOne(averageForDays(30));
-      }
-
-      function renderTodayRecords() {
-        var records = recordsForDate(todayString());
-        elements.todayRecords.innerHTML = "";
-        elements.todayEmpty.classList.toggle("hidden", records.length > 0);
-
-        records.forEach(function (record) {
-          var item = document.createElement("li");
-          item.className = "record-item";
-
-          var main = document.createElement("div");
-          main.className = "record-main";
-          main.textContent = recordLine(record);
-
-          item.appendChild(main);
-          item.appendChild(createRecordActions(record));
-          elements.todayRecords.appendChild(item);
-        });
-      }
-
-      function createRecordActions(record) {
-        var actions = document.createElement("div");
-        actions.className = "record-actions";
-
-        var editButton = document.createElement("button");
-        editButton.type = "button";
-        editButton.className = "secondary";
-        editButton.textContent = "編集";
-        editButton.addEventListener("click", function () {
-          startEdit(record.id);
-        });
-
-        var deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "danger";
-        deleteButton.textContent = "削除";
-        deleteButton.addEventListener("click", function () {
-          deleteRecord(record.id);
-        });
-
-        actions.appendChild(editButton);
-        actions.appendChild(deleteButton);
-        return actions;
-      }
-
-      function renderHistory() {
-        var grouped = {};
-        state.records.forEach(function (record) {
-          var date = recordDate(record);
-          if (!grouped[date]) {
-            grouped[date] = [];
-          }
-          grouped[date].push(record);
-        });
-
-        var dates = Object.keys(grouped).sort(function (a, b) {
-          return b.localeCompare(a);
-        });
-
-        elements.historyList.innerHTML = "";
-        elements.historyEmpty.classList.toggle("hidden", dates.length > 0);
-
-        dates.forEach(function (date) {
-          var records = grouped[date];
-          var item = document.createElement("li");
-          item.className = "history-item";
-
-          var head = document.createElement("div");
-          head.className = "history-card-head";
-
-          var summary = document.createElement("div");
-          summary.className = "history-date-summary";
-
-          var dateLine = document.createElement("div");
-          dateLine.className = "history-date";
-          dateLine.textContent = date;
-
-          var totalLine = document.createElement("div");
-          totalLine.className = "history-total";
-          totalLine.textContent = "合計 " + formatOne(sumRecords(records)) + "g";
-
-          var addButton = document.createElement("button");
-          addButton.type = "button";
-          addButton.className = "add-date-button";
-          addButton.textContent = "この日に追加";
-          addButton.addEventListener("click", function () {
-            startAddForDate(date);
-          });
-
-          summary.appendChild(dateLine);
-          summary.appendChild(totalLine);
-          head.appendChild(summary);
-          head.appendChild(addButton);
-
-          var detail = document.createElement("ul");
-          detail.className = "history-detail";
-          records.forEach(function (record) {
-            var line = document.createElement("li");
-            line.className = "record-item";
-
-            var main = document.createElement("div");
-            main.className = "record-main";
-            main.textContent = recordLine(record);
-
-            line.appendChild(main);
-            line.appendChild(createRecordActions(record));
-            detail.appendChild(line);
-          });
-
-          item.appendChild(head);
-          item.appendChild(detail);
-          elements.historyList.appendChild(item);
-        });
-      }
-
-      function renderAll() {
-        updateCalculation();
-        updateSummaries();
-        renderTodayRecords();
-        renderHistory();
-      }
-
-      function setStatus(element, message, type) {
-        element.textContent = message;
-        element.classList.remove("error", "ok");
-        if (type) {
-          element.classList.add(type);
+      if (action === "edit") {
+        const record = loadRecords().find(item => item.id === id);
+        if (record) {
+          fillForm(record);
         }
       }
-
-      function saveRecord() {
-        var values = formValues();
-        if (!validateForm(values)) {
-          return;
-        }
-
-        if (state.editingId) {
-          updateRecord(values);
-          return;
-        }
-
-        state.records.push(Object.assign({ id: createId() }, values));
-        saveRecords();
-        setStatus(elements.saveStatus, "記録しました。", "ok");
-        resetForm(false);
-        renderAll();
+      if (action === "delete") {
+        deleteRecord(id);
       }
+    });
 
-      function updateRecord(values) {
-        var index = state.records.findIndex(function (record) {
-          return record.id === state.editingId;
-        });
-        if (index === -1) {
-          setStatus(elements.saveStatus, "更新する記録が見つかりません。", "error");
-          return;
-        }
+    window.addEventListener("DOMContentLoaded", () => {
+      buildCheckboxes(statesGroup, "states", statesOptions);
+      buildCheckboxes(evidencesGroup, "evidences", evidenceOptions);
+      setInitialDateTime();
+      toggleOtherFields();
+      renderList();
 
-        state.records[index] = Object.assign({}, state.records[index], values);
-        saveRecords();
-        setStatus(elements.saveStatus, "更新しました。", "ok");
-        resetForm(false);
-        renderAll();
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
       }
-
-      function deleteRecord(id) {
-        if (!confirm("この記録を削除しますか？")) {
-          return;
-        }
-        state.records = state.records.filter(function (record) {
-          return record.id !== id;
-        });
-        saveRecords();
-        renderAll();
-      }
-
-      function exportBackup() {
-        var backup = {
-          appName: "アルコール量メモ",
-          schemaVersion: STORAGE_VERSION,
-          exportedAt: new Date().toISOString(),
-          keys: {
-            records: RECORDS_KEY,
-            settings: SETTINGS_KEY
-          },
-          records: state.records,
-          settings: state.settings
-        };
-
-        var blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-        var url = URL.createObjectURL(blob);
-        var link = document.createElement("a");
-        link.href = url;
-        link.download = "alcohol-memo-backup-" + todayString() + ".json";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-        setStatus(elements.backupStatus, "データを保存しました。", "ok");
-      }
-
-      function validateImportData(data) {
-        var records;
-        var settings;
-
-        if (Array.isArray(data)) {
-          records = data;
-          settings = state.settings;
-        } else if (data && typeof data === "object") {
-          records = data.records;
-          settings = data.settings || state.settings;
-        }
-
-        if (!Array.isArray(records)) {
-          throw new Error("recordsが見つかりません。");
-        }
-
-        records.forEach(function (record) {
-          if (!record || typeof record !== "object" || Array.isArray(record)) {
-            throw new Error("記録データの形式が正しくありません。");
-          }
-        });
-
-        if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
-          settings = state.settings;
-        }
-        settings.version = STORAGE_VERSION;
-
-        return {
-          records: records.map(ensureRecordId),
-          settings: settings
-        };
-      }
-
-      function importBackup(file) {
-        if (!file) {
-          return;
-        }
-
-        var reader = new FileReader();
-        reader.onload = function () {
-          try {
-            var data = JSON.parse(String(reader.result || ""));
-            var imported = validateImportData(data);
-            var message = "現在の記録と設定を、選択したファイルの内容で復元します。よろしいですか？";
-            if (!confirm(message)) {
-              elements.importJson.value = "";
-              setStatus(elements.backupStatus, "復元を取り消しました。", "");
-              return;
-            }
-            localStorage.setItem(RECORDS_KEY, JSON.stringify(imported.records));
-            localStorage.setItem(SETTINGS_KEY, JSON.stringify(imported.settings));
-            setStatus(elements.backupStatus, "復元しました。画面を更新します。", "ok");
-            window.setTimeout(function () {
-              window.location.reload();
-            }, 350);
-          } catch (error) {
-            elements.importJson.value = "";
-            setStatus(elements.backupStatus, "不正なファイルです。JSONの内容を確認してください。", "error");
-          }
-        };
-        reader.onerror = function () {
-          elements.importJson.value = "";
-          setStatus(elements.backupStatus, "ファイルを読み込めませんでした。", "error");
-        };
-        reader.readAsText(file);
-      }
-
-      function initialize() {
-        saveSettings();
-        resetForm(true);
-
-        elements.recordDate.addEventListener("change", function () {
-          if (elements.recordDate.value > todayString()) {
-            elements.recordDate.value = todayString();
-          }
-        });
-        elements.drinkType.addEventListener("change", updateDrinkDefaults);
-        elements.volumeMl.addEventListener("input", updateCalculation);
-        elements.alcoholPercent.addEventListener("input", function () {
-          state.userEditedPercent = true;
-          updateCalculation();
-        });
-        elements.saveRecord.addEventListener("click", saveRecord);
-        elements.cancelEdit.addEventListener("click", function () {
-          resetForm(true);
-        });
-        elements.addTodayDate.addEventListener("click", function () {
-          startAddForDate(todayString());
-        });
-        elements.exportJson.addEventListener("click", exportBackup);
-        elements.importJson.addEventListener("change", function (event) {
-          importBackup(event.target.files && event.target.files[0]);
-        });
-
-        renderAll();
-
-        if ("serviceWorker" in navigator) {
-          window.addEventListener("load", function () {
-            navigator.serviceWorker.register("sw.js").then(function (registration) {
-              registration.update();
-            }).catch(function () {});
-          });
-        }
-      }
-
-      initialize();
-    })();
+    });
   </script>
 </body>
 </html>
